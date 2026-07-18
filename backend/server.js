@@ -25,9 +25,11 @@ app.use(morgan('dev'));
 // Routes
 const authRoutes = require('./src/routes/authRoutes');
 const userRoutes = require('./src/routes/userRoutes');
+const menuRoutes = require('./src/routes/menuRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/menu', menuRoutes);
 
 // Health check
 app.get('/', (req, res) => {
