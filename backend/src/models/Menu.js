@@ -23,6 +23,10 @@ const menuSchema = new mongoose.Schema(
     category: {
       type: String,
       required: [true, 'Category is required'],
+      enum: {
+        values: ['Main meals', 'Protein & sides', 'Drinks & beverages', 'Desserts & snacks'],
+        message: 'Category must be one of: Main meals, Protein & sides, Drinks & beverages, Desserts & snacks'
+      },
       trim: true
     },
 
