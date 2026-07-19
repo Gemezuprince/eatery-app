@@ -1,21 +1,30 @@
 const Order = require('../models/Order');
 const Menu = require('../models/Menu');
+const Cart = require('../models/Cart');
 const { initializeTransaction, verifyTransaction } = require('../services/paystackService');
 
 // @route   POST /api/orders
-// @desc    Private — create a new order
+// @desc    Private — checkout: builds an order from the user's cart
 exports.createOrder = async (req, res, next) => {
   try {
-    const { items, deliveryAddress, paymentMethod } = req.body;
+    const { deliveryAddress, paymentMethod } = req.body;
+
+    const cart = await Cart.findOne({ user: req.user._id });
+
+    if (!cart || cart.items.length === 0) {
+      const error = new Error('Your cart is empty');
+      error.statusCode = 400;
+      return next(error);
+    }
 
     let totalPrice = 0;
     const orderItems = [];
 
-    for (const entry of items) {
+    for (const entry of cart.items) {
       const menuItem = await Menu.findById(entry.menuItem);
 
       if (!menuItem) {
-        const error = new Error(`Menu item not found: ${entry.menuItem}`);
+        const error = new Error(`Menu item no longer exists: ${entry.menuItem}`);
         error.statusCode = 404;
         return next(error);
       }
@@ -43,6 +52,10 @@ exports.createOrder = async (req, res, next) => {
       deliveryAddress,
       paymentMethod
     });
+
+    // Clear the cart now that its contents have become a real order
+    cart.items = [];
+    await cart.save();
 
     // Card payments — initialize with Paystack and return a checkout link
     if (paymentMethod === 'card') {
