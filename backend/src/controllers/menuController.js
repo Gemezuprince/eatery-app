@@ -188,3 +188,28 @@ exports.deleteMenuItem = async (req, res, next) => {
     next(err);
   }
 };
+
+// @route   GET /api/menu/grouped
+// @desc    Public — get the full menu organized by category
+exports.getGroupedMenu = async (req, res, next) => {
+  try {
+    const items = await Menu.find({ isAvailable: true }).sort({ category: 1, name: 1 });
+
+    const grouped = {};
+
+    for (const item of items) {
+      if (!grouped[item.category]) {
+        grouped[item.category] = [];
+      }
+      grouped[item.category].push(item);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Menu retrieved successfully',
+      data: { menu: grouped }
+    });
+  } catch (err) {
+    next(err);
+  }
+};
