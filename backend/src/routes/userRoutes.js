@@ -35,7 +35,7 @@ const passwordChangeLimiter = rateLimit({
 
 router.get('/profile', protect, getProfile);
 
-router.put('/profile', protect, updateProfileValidator, handleValidation, updateProfile);
+router.patch('/profile', protect, updateProfileValidator, handleValidation, updateProfile);
 
 router.put(
   '/profile/change-password',
