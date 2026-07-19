@@ -7,6 +7,7 @@ const {
   getMenuItems,
   getMenuItemById,
   getAdminMenuItems,
+  getGroupedMenu,
   createMenuItem,
   updateMenuItem,
   deleteMenuItem
@@ -24,6 +25,7 @@ const handleValidation = (req, res, next) => {
 
 // Public routes
 router.get('/', getMenuItems);
+router.get('/grouped', getGroupedMenu);
 
 // Admin-only routes — placed BEFORE '/:id' so 'admin' isn't mistaken for an :id value
 router.get('/admin', protect, adminOnly, getAdminMenuItems);
