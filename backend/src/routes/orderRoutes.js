@@ -31,7 +31,7 @@ const handleValidation = (req, res, next) => {
 // Private — any logged-in user
 router.post('/', protect, createOrderValidator, handleValidation, createOrder);
 router.get('/my-orders', protect, getMyOrders);
-router.put('/:id/cancel', protect, cancelOrder);
+router.patch('/:id/cancel', protect, cancelOrder);
 router.get('/:id/verify-payment', protect, verifyOrderPayment);
 
 // Admin only
