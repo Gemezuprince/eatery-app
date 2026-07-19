@@ -11,6 +11,9 @@ dotenv.config();
 if (!process.env.JWT_SECRET) {
   throw new Error('JWT_SECRET is not set — check your .env file');
 }
+if (!process.env.PAYSTACK_SECRET_KEY) {
+  throw new Error('PAYSTACK_SECRET_KEY is not set — check your .env file');
+}
 
 connectDB();
 
@@ -26,10 +29,12 @@ app.use(morgan('dev'));
 const authRoutes = require('./src/routes/authRoutes');
 const userRoutes = require('./src/routes/userRoutes');
 const menuRoutes = require('./src/routes/menuRoutes');
+const orderRoutes = require('./src/routes/orderRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/menu', menuRoutes);
+app.use('/api/orders', orderRoutes);
 
 // Health check
 app.get('/', (req, res) => {
