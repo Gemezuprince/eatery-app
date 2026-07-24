@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 function Footer() {
   return (
     <footer className="bg-brand-dark text-white mt-16">
@@ -12,16 +14,24 @@ function Footer() {
         <div>
           <h4 className="font-semibold mb-2">Quick Links</h4>
           <ul className="text-brand-dark-400 text-sm space-y-1">
-            <li>Home</li>
-            <li>Menu</li>
-            <li>About</li>
-            <li>Contact</li>
+            <li>
+              <Link to="/" className="hover:text-brand-primary">Home</Link>
+            </li>
+            <li>
+              <Link to="/menu" className="hover:text-brand-primary">Menu</Link>
+            </li>
+            <li>
+              <Link to="/about" className="hover:text-brand-primary">About</Link>
+            </li>
+            <li>
+              <Link to="/contact" className="hover:text-brand-primary">Contact</Link>
+            </li>
           </ul>
         </div>
 
         <div>
           <h4 className="font-semibold mb-2">Contact</h4>
-          <p className="text-brand-dark-400 text-sm">hello@savora.com</p>
+          <p className="text-brand-dark-400 text-sm">support@savora.com</p>
           <p className="text-brand-dark-400 text-sm">+234 813 027 5477</p>
         </div>
       </div>
