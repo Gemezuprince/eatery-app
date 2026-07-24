@@ -1,74 +1,98 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { CartProvider } from './contexts/CartContext';
 import MainLayout from './layouts/MainLayout';
+import AdminLayout from './layouts/AdminLayout';
+import ProtectedRoute from './routes/ProtectedRoute';
+import AdminRoute from './routes/AdminRoute';
+import Home from './pages/Home';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import Menu from './pages/Menu';
+import MealDetails from './pages/MealDetails';
 import Login from './pages/Login';
 import Register from './pages/Register';
-
-function Home() {
-  const categories = [
-    'Main meals',
-    'Protein & sides',
-    'Drinks & beverages',
-    'Desserts & snacks',
-  ];
-
-  return (
-    <div className="bg-brand-light">
-      <div className="relative">
-        <img
-          src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&q=80"
-          alt="Delicious food spread"
-          className="w-full h-80 md:h-96 object-cover"
-        />
-        <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-center px-4">
-          <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">
-            Welcome to Savora!
-          </h1>
-          <p className="text-white text-lg max-w-2xl">
-            Satisfy every craving with delicious local and continental meals,
-            tasty proteins, refreshing drinks, desserts, and snacks—freshly
-            prepared and delivered to your doorstep.
-          </p>
-        </div>
-      </div>
-
-      <div className="p-8 text-center">
-        <button className="bg-brand-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-brand-primary-100">
-          Browse Menu
-        </button>
-      </div>
-
-      <div className="max-w-6xl mx-auto px-4 py-12">
-        <h2 className="text-2xl font-bold text-brand-dark mb-6 text-center">
-          Explore Our Categories
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {categories.map((category) => (
-            <div
-              key={category}
-              className="bg-white rounded-lg shadow p-6 text-center hover:shadow-md transition"
-            >
-              <p className="font-semibold text-brand-dark">{category}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
+import Cart from './pages/Cart';
+import Checkout from './pages/Checkout';
+import Profile from './pages/Profile';
+import MyOrders from './pages/MyOrders';
+import PaymentCallback from './pages/PaymentCallback';
+import Dashboard from './pages/admin/Dashboard';
+import ManageMenu from './pages/admin/ManageMenu';
+import ManageOrders from './pages/admin/ManageOrders';
 
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<MainLayout />}>
-            <Route index element={<Home />} />
-            <Route path="login" element={<Login />} />
-            <Route path="register" element={<Register />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <CartProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<MainLayout />}>
+              <Route index element={<Home />} />
+              <Route path="about" element={<About />} />
+              <Route path="contact" element={<Contact />} />
+              <Route path="menu" element={<Menu />} />
+              <Route path="menu/:id" element={<MealDetails />} />
+              <Route path="login" element={<Login />} />
+              <Route path="register" element={<Register />} />
+
+              <Route
+                path="cart"
+                element={
+                  <ProtectedRoute>
+                    <Cart />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="checkout"
+                element={
+                  <ProtectedRoute>
+                    <Checkout />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="profile"
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="my-orders"
+                element={
+                  <ProtectedRoute>
+                    <MyOrders />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="payment-callback"
+                element={
+                  <ProtectedRoute>
+                    <PaymentCallback />
+                  </ProtectedRoute>
+                }
+              />
+            </Route>
+
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <AdminLayout />
+                </AdminRoute>
+              }
+            >
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="menu" element={<ManageMenu />} />
+              <Route path="orders" element={<ManageOrders />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </CartProvider>
     </AuthProvider>
   );
 }
