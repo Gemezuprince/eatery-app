@@ -6,7 +6,10 @@ exports.initializeTransaction = (email, amount, reference) => {
     const params = JSON.stringify({
       email,
       amount: amount * 100, // Paystack expects kobo, not naira
-      reference
+      reference,
+      callback_url: process.env.FRONTEND_URL
+        ? `${process.env.FRONTEND_URL}/payment-callback`
+        : undefined
     });
 
     const options = {
@@ -32,7 +35,7 @@ exports.initializeTransaction = (email, amount, reference) => {
   });
 };
 
-// Verify a transaction directly — useful as a backup check, alongside the webhook
+// Verify a transaction — confirms whether payment actually succeeded
 exports.verifyTransaction = (reference) => {
   return new Promise((resolve, reject) => {
     const options = {
