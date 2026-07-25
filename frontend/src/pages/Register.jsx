@@ -93,7 +93,7 @@ function Register() {
 
           <div>
             <label className="block text-sm font-medium text-brand-dark mb-1">
-              Phone
+              Phone <span className="text-brand-dark-300">(optional)</span>
             </label>
             <input
               type="tel"
@@ -104,7 +104,7 @@ function Register() {
 
           <div>
             <label className="block text-sm font-medium text-brand-dark mb-1">
-              Address
+              Address <span className="text-brand-dark-300">(optional)</span>
             </label>
             <input
               type="text"
