@@ -9,19 +9,37 @@ dotenv.config();
 
 // Fail fast if critical env vars are missing
 if (!process.env.JWT_SECRET) {
-  throw new Error('JWT_SECRET is not set — check your .env file');
+  throw new Error('JWT_SECRET is not set – check your .env file');
 }
+
 if (!process.env.PAYSTACK_SECRET_KEY) {
-  throw new Error('PAYSTACK_SECRET_KEY is not set — check your .env file');
+  throw new Error('PAYSTACK_SECRET_KEY is not set – check your .env file');
 }
 
 connectDB();
 
 const app = express();
 
+// Explicitly allow only the deployed frontend (and local dev) to make requests
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:5173'
+].filter(Boolean);
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (e.g. Postman, curl, server-to-server)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+};
+
 // Security & core middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(morgan('dev'));
 
@@ -50,4 +68,7 @@ const errorHandler = require('./src/middleware/errorHandler');
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+app.listen(PORT, () =>
+  console.log(`Server running on port ${PORT}`)
+);
