@@ -13,20 +13,39 @@ function MyOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [cancellingId, setCancellingId] = useState(null);
+
+  const fetchOrders = async () => {
+    try {
+      const response = await api.get('/orders/my-orders');
+      setOrders(response.data.data.orders);
+    } catch (err) {
+      setError('Could not load your orders.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const response = await api.get('/orders/my-orders');
-        setOrders(response.data.data.orders);
-      } catch (err) {
-        setError('Could not load your orders.');
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchOrders();
   }, []);
+
+  const handleCancel = async (orderId) => {
+    if (!window.confirm('Cancel this order?')) return;
+    setCancellingId(orderId);
+    try {
+      await api.patch(`/orders/${orderId}/cancel`);
+      setOrders((prev) =>
+        prev.map((order) =>
+          order._id === orderId ? { ...order, status: 'cancelled' } : order
+        )
+      );
+    } catch (err) {
+      alert(err.response?.data?.message || 'Could not cancel this order.');
+    } finally {
+      setCancellingId(null);
+    }
+  };
 
   if (loading) {
     return <p className="p-8 text-brand-dark-200">Loading your orders...</p>;
@@ -81,6 +100,18 @@ function MyOrders() {
                     ₦{order.totalPrice.toFixed(2)}
                   </span>
                 </div>
+
+                {order.status === 'pending' && (
+                  <div className="mt-3 text-right">
+                    <button
+                      onClick={() => handleCancel(order._id)}
+                      disabled={cancellingId === order._id}
+                      className="text-red-600 text-sm font-semibold disabled:opacity-50"
+                    >
+                      {cancellingId === order._id ? 'Cancelling...' : 'Cancel Order'}
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>
