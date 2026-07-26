@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../hooks/useCart';
 
 function Cart() {
-  const { cart, loading, updateCartItem, removeCartItem } = useCart();
+  const { cart, loading, updateCartItem, removeCartItem, clearCart } = useCart();
   const navigate = useNavigate();
 
   const total = cart.items.reduce(
@@ -27,6 +27,15 @@ function Cart() {
     }
   };
 
+  const handleClearCart = async () => {
+    if (!window.confirm('Clear your entire cart?')) return;
+    try {
+      await clearCart();
+    } catch (err) {
+      console.error('Failed to clear cart', err);
+    }
+  };
+
   if (loading) {
     return <p className="p-8 text-brand-dark-200">Loading cart...</p>;
   }
@@ -48,7 +57,15 @@ function Cart() {
   return (
     <div className="bg-brand-light min-h-screen px-4 py-8">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold text-brand-dark mb-6">Your Cart</h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold text-brand-dark">Your Cart</h1>
+          <button
+            onClick={handleClearCart}
+            className="text-red-600 text-sm font-semibold"
+          >
+            Clear Cart
+          </button>
+        </div>
 
         <div className="space-y-4">
           {cart.items.map((item) => (
