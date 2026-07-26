@@ -69,23 +69,6 @@ function ManageOrders() {
     }
   };
 
-  const handleCancel = async (orderId) => {
-    if (!window.confirm('Cancel this order?')) return;
-    setUpdatingId(orderId);
-    try {
-      await api.patch(`/orders/${orderId}/cancel`);
-      setOrders((prev) =>
-        prev.map((order) =>
-          order._id === orderId ? { ...order, status: 'cancelled' } : order
-        )
-      );
-    } catch (err) {
-      alert(err.response?.data?.message || 'Could not cancel this order.');
-    } finally {
-      setUpdatingId(null);
-    }
-  };
-
   return (
     <div>
       <h1 className="text-3xl font-bold text-brand-dark mb-6">Manage Orders</h1>
@@ -167,55 +150,43 @@ function ManageOrders() {
               </span>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-4 mt-4">
-              <div className="flex flex-wrap items-center gap-6">
+            <div className="flex flex-wrap items-center gap-6 mt-4">
+              <div>
+                <label className="text-sm font-medium text-brand-dark mr-2">
+                  Order Status:
+                </label>
+                <select
+                  value={order.status}
+                  onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                  disabled={updatingId === order._id}
+                  className="border border-brand-dark-400 rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                >
+                  {statuses.map((status) => (
+                    <option key={status} value={status} className="capitalize">
+                      {status}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {order.paymentMethod === 'cash' && (
                 <div>
                   <label className="text-sm font-medium text-brand-dark mr-2">
-                    Order Status:
+                    Payment Status:
                   </label>
                   <select
-                    value={order.status}
-                    onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                    value={order.paymentStatus}
+                    onChange={(e) => handlePaymentStatusChange(order._id, e.target.value)}
                     disabled={updatingId === order._id}
                     className="border border-brand-dark-400 rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
                   >
-                    {statuses.map((status) => (
+                    {paymentStatuses.map((status) => (
                       <option key={status} value={status} className="capitalize">
                         {status}
                       </option>
                     ))}
                   </select>
                 </div>
-
-                {order.paymentMethod === 'cash' && (
-                  <div>
-                    <label className="text-sm font-medium text-brand-dark mr-2">
-                      Payment Status:
-                    </label>
-                    <select
-                      value={order.paymentStatus}
-                      onChange={(e) => handlePaymentStatusChange(order._id, e.target.value)}
-                      disabled={updatingId === order._id}
-                      className="border border-brand-dark-400 rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                    >
-                      {paymentStatuses.map((status) => (
-                        <option key={status} value={status} className="capitalize">
-                          {status}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-              </div>
-
-              {!['delivered', 'cancelled'].includes(order.status) && (
-                <button
-                  onClick={() => handleCancel(order._id)}
-                  disabled={updatingId === order._id}
-                  className="text-red-600 text-sm font-semibold disabled:opacity-50"
-                >
-                  Cancel Order
-                </button>
               )}
             </div>
           </div>
